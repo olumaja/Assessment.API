@@ -1,6 +1,8 @@
 ﻿using Assessment.Core.DTOs;
 using Assessment.Core.Interfaces;
 using Assessment.Data.Context;
+using Assessment.Data.Models;
+using Assessment.Infastructure.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -19,22 +21,16 @@ namespace Assessment.Core.Repository
             _context = context;
         }
 
-        public async Task<List<StudentDTO>> GetAllStudentAsync()
+        public PagedList<Student> GetAllStudent(QueryParameters queryParameters)
         {
-            var AllStudentCourses = await _context.Students.Include(x => x.StudentCourses).ThenInclude(x => x.Course).ToListAsync();
 
-            var students = AllStudentCourses.Select(x => new StudentDTO
-            {
-                Id = x.Id,
-                Name = x.Name,
-                TheStudentCourses = x.StudentCourses.Select(c => new CourseDTO
-                {
-                    Id = c.Course.Id,
-                    CourseName = c.Course.CourseName
-                }).ToList()
-            }).ToList();
+            var AllStudentCourses = PagedList<Student>.Paginated(
+                    _context.Students
+                    .Include(x => x.StudentCourses)
+                    .ThenInclude(x => x.Course), queryParameters.PageNumber, queryParameters.PageSize
+                );
 
-            return students;
+            return AllStudentCourses;
         }
     }
 }

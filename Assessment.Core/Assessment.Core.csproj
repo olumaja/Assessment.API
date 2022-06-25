@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Assessment.Data\Assessment.Data.csproj" />
+    <ProjectReference Include="..\Assessment.Infastructure\Assessment.Infastructure.csproj" />
   </ItemGroup>
 
 </Project>

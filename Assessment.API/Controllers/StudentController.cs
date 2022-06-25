@@ -1,6 +1,9 @@
-﻿using Assessment.Core.Interfaces;
+﻿using Assessment.Core.DTOs;
+using Assessment.Core.Interfaces;
+using Assessment.Infastructure.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,18 +25,50 @@ namespace Assessment.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetStudents()
+        public IActionResult GetStudents([FromQuery] QueryParameters queryParameters)
         {
             try
             {
-                var students = await _studentRepository.GetAllStudentAsync();
+                //var students = AllStudentCourses.Select(x => new StudentDTO
+                //{
+                //    Id = x.Id,
+                //    Name = x.Name,
+                //    TheStudentCourses = x.StudentCourses.Select(c => new CourseDTO
+                //    {
+                //        Id = c.Course.Id,
+                //        CourseName = c.Course.CourseName
+                //    }).ToList()
+                //}).ToList();
+                var students = _studentRepository.GetAllStudent(queryParameters);
 
                 if(students == null)
                 {
                     return BadRequest("Users don't exist");
                 }
 
-                return Ok(students);
+                var meta = new
+                {
+                    students.CurrentPage,
+                    students.TotalPages,
+                    students.PageSize,
+                    students.HasNext,
+                    students.HasPrevious
+                };
+
+                var AllStudentCourses = students.Select(x => new StudentDTO
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    TheStudentCourses = x.StudentCourses.Select(c => new CourseDTO
+                    {
+                        Id = c.Course.Id,
+                        CourseName = c.Course.CourseName
+                    }).ToList()
+                }).ToList();
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(meta));
+
+                return Ok(AllStudentCourses);
             }
             catch(Exception ex)
             {
