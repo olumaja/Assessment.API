@@ -29,16 +29,6 @@ namespace Assessment.API.Controllers
         {
             try
             {
-                //var students = AllStudentCourses.Select(x => new StudentDTO
-                //{
-                //    Id = x.Id,
-                //    Name = x.Name,
-                //    TheStudentCourses = x.StudentCourses.Select(c => new CourseDTO
-                //    {
-                //        Id = c.Course.Id,
-                //        CourseName = c.Course.CourseName
-                //    }).ToList()
-                //}).ToList();
                 var students = _studentRepository.GetAllStudent(queryParameters);
 
                 if(students == null)

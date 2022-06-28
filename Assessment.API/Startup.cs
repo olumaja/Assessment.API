@@ -30,7 +30,13 @@ namespace Assessment.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllers(setupAction =>
+                {
+                    setupAction.ReturnHttpNotAcceptable = true;
+                }
+            ).AddXmlDataContractSerializerFormatters();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Assessment.API", Version = "v1" });
