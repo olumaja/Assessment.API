@@ -1,6 +1,7 @@
 ﻿using Assessment.Core.DTOs;
 using Assessment.Core.Interfaces;
 using Assessment.Infastructure.Helpers;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -17,11 +18,13 @@ namespace Assessment.API.Controllers
     {
         private readonly ILogger<StudentController> _logger;
         private readonly IStudentRepository _studentRepository;
+        private readonly IMapper _mapper;
 
-        public StudentController(ILogger<StudentController> logger, IStudentRepository studentRepository)
+        public StudentController(ILogger<StudentController> logger, IStudentRepository studentRepository, IMapper mapper)
         {
             _logger = logger;
             _studentRepository = studentRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -57,8 +60,8 @@ namespace Assessment.API.Controllers
                 }).ToList();
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(meta));
-
                 return Ok(AllStudentCourses);
+                //return Ok(_mapper.Map<IEnumerable<StudentDTO>>(students));
             }
             catch(Exception ex)
             {
